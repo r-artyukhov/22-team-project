@@ -4,7 +4,7 @@
 
 - Артюхов Роман Николаевич [@r-artyukhov](https://github.com/r-artyukhov)
 - Дубова Влада Олеговна [@duvl](https://github.com/duvl)
-- Емцова Анна Сергеевна 
+- Емцова Анна Сергеевна  [young8_a](https://github.com/yemtsovaanna-alt)
 - Шукалова Лия Александровна [@LiyaKul](https://github.com/LiyaKul)
 
 **Куратор проекта:** Дмитрий Качкин
