@@ -1,0 +1,34 @@
+{
+  "logs": [
+    {
+      "message": "BLOCK* NameSystem.addStoredBlock: addStoredBlock request received for blk_-1608999687919862906 on 10.250.7.240:50010 size 0 but it does not belong to any file.",
+      "component": "FSNamesystem",
+      "level": "WARN"
+    },
+    {
+      "message": "IOException in BlockReceiver.receiveBlock for block blk_-1608999687919862906 java.io.EOFException: End of File Exception",
+      "component": "DataNode$DataXceiver",
+      "level": "ERROR"
+    },
+    {
+      "message": "Remote Datanode 10.250.19.102:50010 got error 1 for block blk_-1608999687919862906",
+      "component": "DataNode$DataXceiver",
+      "level": "ERROR"
+    },
+    {
+      "message": "10.250.19.102:50010 is dead.",
+      "component": "NameNode",
+      "level": "WARN"
+    },
+    {
+      "message": "Lost connection to datanode 10.250.19.102:50010",
+      "component": "DFSClient",
+      "level": "ERROR"
+    },
+    {
+      "message": "Retrying block allocation for blk_-1608999687919862906 because replicas unavailable",
+      "component": "FSNamesystem",
+      "level": "WARN"
+    }
+  ]
+}
