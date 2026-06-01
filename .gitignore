@@ -1,3 +1,11 @@
 .idea
 .env
 .venv
+# Большие файлы данных — не хранить в git
+DL/artifacts/
+.DS_Store
+MLflow/mlruns/
+MLflow/artifacts/
+MLflow/deeplog_artifacts/
+*.log
+*.npz
