@@ -9,3 +9,5 @@ MLflow/artifacts/
 MLflow/deeplog_artifacts/
 *.log
 *.npz
+
+HDFS_v1/
