@@ -18,3 +18,13 @@ ENV/
 .coverage
 htmlcov/
 .DS_Store
+.venv
+DL/artifacts/
+.DS_Store
+MLflow/mlruns/
+MLflow/artifacts/
+MLflow/deeplog_artifacts/
+*.log
+*.npz
+
+HDFS_v1/
