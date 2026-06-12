@@ -1,0 +1,44 @@
+{
+  "logs": [
+    {
+      "message": "Receiving block blk_-1608999687919862906 src: /10.250.19.102:54106 dest: /10.250.19.102:50010",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "Received block blk_-1608999687919862906 of size 67108864 from /10.250.19.102",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "PacketResponder 2 for block blk_-1608999687919862906 terminating",
+      "component": "DataNode$PacketResponder",
+      "level": "INFO"
+    },
+    {
+      "message": "Served block blk_-1608999687919862906 to /10.250.10.6",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "Receiving block blk_5724034459456899955 src: /10.250.7.240:44888 dest: /10.250.7.240:50010",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "Received block blk_5724034459456899955 of size 67108864 from /10.250.7.240",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "BLOCK* NameSystem.addStoredBlock: blockMap updated: 10.250.7.240:50010 is added to blk_5724034459456899955 size 67108864",
+      "component": "FSNamesystem",
+      "level": "INFO"
+    },
+    {
+      "message": "Verification succeeded for blk_-1608999687919862906",
+      "component": "DataBlockScanner",
+      "level": "INFO"
+    }
+  ]
+}

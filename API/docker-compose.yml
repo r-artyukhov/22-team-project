@@ -1,0 +1,17 @@
+services:
+  ml-service:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - db_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/ml_service.db
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-your-admin-token-here}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRATION_MINUTES=30
+    restart: unless-stopped
+
+volumes:
+  db_data:

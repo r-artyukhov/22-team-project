@@ -1,0 +1,44 @@
+{
+  "logs": [
+    {
+      "message": "Exception in receiveBlock for block blk_-1608999687919862906 java.io.IOException: Connection reset by peer",
+      "component": "DataNode$DataXceiver",
+      "level": "ERROR"
+    },
+    {
+      "message": "Receiving block blk_-1608999687919862906 src: /10.250.19.102:54106 dest: /10.250.19.102:50010",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "writeBlock blk_-1608999687919862906 received exception java.net.SocketTimeoutException: 60000 millis timeout while waiting for channel to be ready for write",
+      "component": "DataNode$DataXceiver",
+      "level": "ERROR"
+    },
+    {
+      "message": "DatanodeRegistration(10.250.7.240:50010, storageID=DS-1861012563-10.250.7.240-50010-1292578733411, infoPort=50075, ipcPort=50020):Failed to transfer blk_-1608999687919862906 to 10.250.19.102:50010 got java.net.SocketException: Connection refused",
+      "component": "DataNode",
+      "level": "WARN"
+    },
+    {
+      "message": "Exception in receiveBlock for block blk_5724034459456899955 java.io.IOException: Broken pipe",
+      "component": "DataNode$DataXceiver",
+      "level": "ERROR"
+    },
+    {
+      "message": "BLOCK* ask 10.250.14.224:50010 to delete blk_-1608999687919862906",
+      "component": "FSNamesystem",
+      "level": "INFO"
+    },
+    {
+      "message": "Deleting block blk_-1608999687919862906 file /data/hdfs/current/blk_-1608999687919862906",
+      "component": "DataNode$FSDataset",
+      "level": "INFO"
+    },
+    {
+      "message": "BLOCK* NameSystem.addStoredBlock: Redundant addStoredBlock request received for blk_5724034459456899955 on 10.250.7.240:50010 size 67108864",
+      "component": "FSNamesystem",
+      "level": "WARN"
+    }
+  ]
+}

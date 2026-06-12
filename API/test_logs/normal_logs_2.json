@@ -1,0 +1,34 @@
+{
+  "logs": [
+    {
+      "message": "Receiving block blk_7503483334202473044 src: /10.250.14.224:48665 dest: /10.250.14.224:50010",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "Received block blk_7503483334202473044 of size 67108864 from /10.250.14.224",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "PacketResponder 0 for block blk_7503483334202473044 terminating",
+      "component": "DataNode$PacketResponder",
+      "level": "INFO"
+    },
+    {
+      "message": "BLOCK* NameSystem.allocateBlock: /user/data/file.txt blk_7503483334202473044",
+      "component": "FSNamesystem",
+      "level": "INFO"
+    },
+    {
+      "message": "Served block blk_7503483334202473044 to /10.250.10.7",
+      "component": "DataNode$DataXceiver",
+      "level": "INFO"
+    },
+    {
+      "message": "Verification succeeded for blk_7503483334202473044",
+      "component": "DataBlockScanner",
+      "level": "INFO"
+    }
+  ]
+}
