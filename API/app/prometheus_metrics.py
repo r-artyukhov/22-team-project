@@ -3,7 +3,7 @@ from starlette.responses import Response
 
 ANOMALY_PREDICTIONS = Counter(
     "anomaly_predictions_total",
-    "LR predictions",
+    "Deeplog predictions",
     ["result"],
 )
 

@@ -99,7 +99,14 @@ def safe_label_to_binary(label: str) -> int:
 
 # Data preparation
 class SessionRecord:
-    def __init__(self, block_id: str, label: str, events: List[str], times: List[float], latency: float):
+    def __init__(
+        self,
+        block_id: str,
+        label: str,
+        events: List[str],
+        times: List[float],
+        latency: float,
+    ):
         self.block_id = block_id
         self.label = label
         self.events = events
@@ -118,7 +125,11 @@ def load_sessions(csv_path: str) -> List[SessionRecord]:
     for _, row in df.iterrows():
         events = parse_list_cell(row["Features"])
         times = parse_list_cell(row["TimeInterval"])
-        latency = float(row["Latency"]) if "Latency" in df.columns and pd.notna(row["Latency"]) else float(sum(times))
+        latency = (
+            float(row["Latency"])
+            if "Latency" in df.columns and pd.notna(row["Latency"])
+            else float(sum(times))
+        )
 
         if len(events) < 2:
             continue
@@ -184,7 +195,9 @@ def split_normal_sessions(sessions: List[SessionRecord], cfg: Config):
 
 # Path anomaly dataset/model
 class PathWindowDataset(Dataset):
-    def __init__(self, sessions: List[SessionRecord], vocab: Vocab, history_size: int):
+    def __init__(
+        self, sessions: List[SessionRecord], vocab: Vocab, history_size: int
+    ):
         self.samples = []
         self.history_size = history_size
         pad_id = vocab.encode(Vocab.PAD)
@@ -204,11 +217,20 @@ class PathWindowDataset(Dataset):
 
     def __getitem__(self, idx):
         hist, target = self.samples[idx]
-        return torch.tensor(hist, dtype=torch.long), torch.tensor(target, dtype=torch.long)
+        return torch.tensor(hist, dtype=torch.long), torch.tensor(
+            target, dtype=torch.long
+        )
 
 
 class PathLSTM(nn.Module):
-    def __init__(self, vocab_size: int, embed_dim: int, hidden_dim: int, num_layers: int, dropout: float):
+    def __init__(
+        self,
+        vocab_size: int,
+        embed_dim: int,
+        hidden_dim: int,
+        num_layers: int,
+        dropout: float,
+    ):
         super().__init__()
         self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
         self.lstm = nn.LSTM(
@@ -231,7 +253,9 @@ class PathLSTM(nn.Module):
 
 # Timing anomaly dataset/model
 class TimeWindowDataset(Dataset):
-    def __init__(self, sessions: List[SessionRecord], vocab: Vocab, history_size: int):
+    def __init__(
+        self, sessions: List[SessionRecord], vocab: Vocab, history_size: int
+    ):
         self.samples = []
         pad_id = vocab.encode(Vocab.PAD)
         for session in sessions:
@@ -263,7 +287,14 @@ class TimeWindowDataset(Dataset):
 
 
 class TimeLSTM(nn.Module):
-    def __init__(self, vocab_size: int, embed_dim: int, hidden_dim: int, num_layers: int, dropout: float):
+    def __init__(
+        self,
+        vocab_size: int,
+        embed_dim: int,
+        hidden_dim: int,
+        num_layers: int,
+        dropout: float,
+    ):
         super().__init__()
         self.embedding = nn.Embedding(vocab_size, embed_dim, padding_idx=0)
         self.lstm = nn.LSTM(
@@ -295,7 +326,9 @@ def train_path_model(model, train_loader, valid_loader, cfg: Config):
     device = cfg.device
     model.to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=cfg.path_lr)
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.7)
+    scheduler = torch.optim.lr_scheduler.StepLR(
+        optimizer, step_size=1, gamma=0.7
+    )
     criterion = nn.CrossEntropyLoss()
 
     best_state = None
@@ -326,11 +359,17 @@ def train_path_model(model, train_loader, valid_loader, cfg: Config):
                 loss = criterion(logits, target)
                 valid_losses.append(loss.item())
 
-        mean_valid = float(np.mean(valid_losses)) if valid_losses else float("inf")
-        print(f"[Path] epoch={epoch+1:02d} train_loss={np.mean(train_losses):.6f} valid_loss={mean_valid:.6f}")
+        mean_valid = (
+            float(np.mean(valid_losses)) if valid_losses else float("inf")
+        )
+        print(
+            f"[Path] epoch={epoch + 1:02d} train_loss={np.mean(train_losses):.6f} valid_loss={mean_valid:.6f}"
+        )
         if mean_valid < best_valid:
             best_valid = mean_valid
-            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            best_state = {
+                k: v.cpu().clone() for k, v in model.state_dict().items()
+            }
 
     if best_state is not None:
         model.load_state_dict(best_state)
@@ -375,11 +414,17 @@ def train_time_model(model, train_loader, valid_loader, cfg: Config):
                 loss = criterion(pred, target_t)
                 valid_losses.append(loss.item())
 
-        mean_valid = float(np.mean(valid_losses)) if valid_losses else float("inf")
-        print(f"[Time] epoch={epoch+1:02d} train_loss={np.mean(train_losses):.6f} valid_loss={mean_valid:.6f}")
+        mean_valid = (
+            float(np.mean(valid_losses)) if valid_losses else float("inf")
+        )
+        print(
+            f"[Time] epoch={epoch + 1:02d} train_loss={np.mean(train_losses):.6f} valid_loss={mean_valid:.6f}"
+        )
         if mean_valid < best_valid:
             best_valid = mean_valid
-            best_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            best_state = {
+                k: v.cpu().clone() for k, v in model.state_dict().items()
+            }
 
     if best_state is not None:
         model.load_state_dict(best_state)
@@ -387,7 +432,9 @@ def train_time_model(model, train_loader, valid_loader, cfg: Config):
 
 
 # Threshold calibration
-def collect_timing_errors(model: TimeLSTM, sessions: List[SessionRecord], vocab: Vocab, cfg: Config) -> np.ndarray:
+def collect_timing_errors(
+    model: TimeLSTM, sessions: List[SessionRecord], vocab: Vocab, cfg: Config
+) -> np.ndarray:
     device = cfg.device
     model.eval()
     pad_id = vocab.encode(Vocab.PAD)
@@ -406,9 +453,15 @@ def collect_timing_errors(model: TimeLSTM, sessions: List[SessionRecord], vocab:
                     hist_e = [pad_id] * pad_len + hist_e
                     hist_t = [0.0] * pad_len + hist_t
 
-                hist_e_t = torch.tensor(hist_e, dtype=torch.long, device=device).unsqueeze(0)
-                hist_t_t = torch.tensor(hist_t, dtype=torch.float32, device=device).unsqueeze(0)
-                next_e_t = torch.tensor([ev[i]], dtype=torch.long, device=device)
+                hist_e_t = torch.tensor(
+                    hist_e, dtype=torch.long, device=device
+                ).unsqueeze(0)
+                hist_t_t = torch.tensor(
+                    hist_t, dtype=torch.float32, device=device
+                ).unsqueeze(0)
+                next_e_t = torch.tensor(
+                    [ev[i]], dtype=torch.long, device=device
+                )
                 target_t = float(tm[i])
                 pred_t = float(model(hist_e_t, hist_t_t, next_e_t).item())
                 err = (pred_t - target_t) ** 2
@@ -446,7 +499,9 @@ def detect_session(
                 hist_t = [0.0] * pad_len + hist_t
 
             # path anomaly
-            hist_e_t = torch.tensor(hist_e, dtype=torch.long, device=device).unsqueeze(0)
+            hist_e_t = torch.tensor(
+                hist_e, dtype=torch.long, device=device
+            ).unsqueeze(0)
             logits = path_model(hist_e_t)
             probs = torch.softmax(logits, dim=-1).squeeze(0)
             sorted_probs, sorted_ids = torch.sort(probs, descending=True)
@@ -456,26 +511,25 @@ def detect_session(
             path_anomaly = ev[i] not in nucleus_ids
 
             # timing anomaly
-            hist_t_t = torch.tensor(hist_t, dtype=torch.float32, device=device).unsqueeze(0)
+            hist_t_t = torch.tensor(
+                hist_t, dtype=torch.float32, device=device
+            ).unsqueeze(0)
             next_e_t = torch.tensor([ev[i]], dtype=torch.long, device=device)
             pred_time = float(time_model(hist_e_t, hist_t_t, next_e_t).item())
             err = (pred_time - float(tm[i])) ** 2
             # time_anomaly = err > timing_threshold
             time_anomaly = False
 
-            step_results.append(
-                {
-                    "step_index": i,
-                    "actual_event": vocab.decode(ev[i]),
-                    "path_anomaly": bool(path_anomaly),
-                    "actual_time": float(tm[i]),
-                    "pred_time": pred_time,
-                    "time_mse": err,
-                    "time_anomaly": bool(time_anomaly),
-                    "combined_anomaly": bool(path_anomaly or time_anomaly),
-                }
-            )
-
+            step_results.append({
+                "step_index": i,
+                "actual_event": vocab.decode(ev[i]),
+                "path_anomaly": bool(path_anomaly),
+                "actual_time": float(tm[i]),
+                "pred_time": pred_time,
+                "time_mse": err,
+                "time_anomaly": bool(time_anomaly),
+                "combined_anomaly": bool(path_anomaly or time_anomaly),
+            })
 
     session_pred = int(any(x["combined_anomaly"] for x in step_results))
     return {
@@ -502,8 +556,12 @@ def main(cfg: Config):
         raise ValueError("No usable sessions found in the CSV.")
 
     print(f"Total sessions: {len(sessions)}")
-    train_sessions, valid_sessions, test_sessions = split_normal_sessions(sessions, cfg)
-    print(f"Normal train: {len(train_sessions)} | normal valid: {len(valid_sessions)} | test(all): {len(test_sessions)}")
+    train_sessions, valid_sessions, test_sessions = split_normal_sessions(
+        sessions, cfg
+    )
+    print(
+        f"Normal train: {len(train_sessions)} | normal valid: {len(valid_sessions)} | test(all): {len(test_sessions)}"
+    )
 
     # Build vocabulary only from normal training data.
     train_tokens = [e for s in train_sessions for e in s.events]
@@ -511,13 +569,17 @@ def main(cfg: Config):
     print(f"Vocab size: {len(vocab)}")
 
     # Normalize time values using only normal training data.
-    train_times = np.array([np.log1p(t) for s in train_sessions for t in s.times], dtype=np.float32)
+    train_times = np.array(
+        [np.log1p(t) for s in train_sessions for t in s.times], dtype=np.float32
+    )
     time_mean = float(train_times.mean())
     time_std = float(train_times.std() + 1e-8)
 
     for group in [train_sessions, valid_sessions, test_sessions]:
         for s in group:
-            s.times = [float((np.log1p(t) - time_mean) / time_std) for t in s.times]
+            s.times = [
+                float((np.log1p(t) - time_mean) / time_std) for t in s.times
+            ]
 
     # Datasets / loaders
     path_train_ds = PathWindowDataset(train_sessions, vocab, cfg.history_size)
@@ -525,10 +587,18 @@ def main(cfg: Config):
     time_train_ds = TimeWindowDataset(train_sessions, vocab, cfg.history_size)
     time_valid_ds = TimeWindowDataset(valid_sessions, vocab, cfg.history_size)
 
-    path_train_loader = DataLoader(path_train_ds, batch_size=cfg.path_batch_size, shuffle=True)
-    path_valid_loader = DataLoader(path_valid_ds, batch_size=cfg.path_batch_size, shuffle=False)
-    time_train_loader = DataLoader(time_train_ds, batch_size=cfg.time_batch_size, shuffle=True)
-    time_valid_loader = DataLoader(time_valid_ds, batch_size=cfg.time_batch_size, shuffle=False)
+    path_train_loader = DataLoader(
+        path_train_ds, batch_size=cfg.path_batch_size, shuffle=True
+    )
+    path_valid_loader = DataLoader(
+        path_valid_ds, batch_size=cfg.path_batch_size, shuffle=False
+    )
+    time_train_loader = DataLoader(
+        time_train_ds, batch_size=cfg.time_batch_size, shuffle=True
+    )
+    time_valid_loader = DataLoader(
+        time_valid_ds, batch_size=cfg.time_batch_size, shuffle=False
+    )
 
     # Models
     path_model = PathLSTM(
@@ -547,29 +617,43 @@ def main(cfg: Config):
     )
 
     print("Training path model...")
-    path_model = train_path_model(path_model, path_train_loader, path_valid_loader, cfg)
+    path_model = train_path_model(
+        path_model, path_train_loader, path_valid_loader, cfg
+    )
 
     print("Training time model...")
-    time_model = train_time_model(time_model, time_train_loader, time_valid_loader, cfg)
+    time_model = train_time_model(
+        time_model, time_train_loader, time_valid_loader, cfg
+    )
 
     print("Calibrating timing threshold on normal validation data...")
     valid_errors = collect_timing_errors(time_model, valid_sessions, vocab, cfg)
-    timing_threshold = float(np.quantile(valid_errors, cfg.timing_threshold_quantile))
-    print(f"Timing threshold (quantile={cfg.timing_threshold_quantile}): {timing_threshold:.6f}")
+    timing_threshold = float(
+        np.quantile(valid_errors, cfg.timing_threshold_quantile)
+    )
+    print(
+        f"Timing threshold (quantile={cfg.timing_threshold_quantile}): {timing_threshold:.6f}"
+    )
 
     # Evaluate on test sessions.
     print("Running detection...")
     session_outputs = []
     y_true, y_pred = [], []
     for s in test_sessions:
-        result = detect_session(s, path_model, time_model, vocab, cfg, timing_threshold)
+        result = detect_session(
+            s, path_model, time_model, vocab, cfg, timing_threshold
+        )
         session_outputs.append(result)
         y_true.append(result["true_label"])
         y_pred.append(result["pred_label"])
 
     print("Block-level evaluation:")
     print(confusion_matrix(y_true, y_pred))
-    print(classification_report(y_true, y_pred, target_names=["Success", "Anomaly"], digits=4))
+    print(
+        classification_report(
+            y_true, y_pred, target_names=["Success", "Anomaly"], digits=4
+        )
+    )
 
     # false_negatives = [
     #     x for x in session_outputs
@@ -591,7 +675,15 @@ def main(cfg: Config):
     with open(out_dir / "vocab.json", "w", encoding="utf-8") as f:
         json.dump(vocab.stoi, f, ensure_ascii=False, indent=2)
     with open(out_dir / "normalization.json", "w", encoding="utf-8") as f:
-        json.dump({"time_mean": time_mean, "time_std": time_std, "timing_threshold": timing_threshold}, f, indent=2)
+        json.dump(
+            {
+                "time_mean": time_mean,
+                "time_std": time_std,
+                "timing_threshold": timing_threshold,
+            },
+            f,
+            indent=2,
+        )
     with open(out_dir / "session_predictions.json", "w", encoding="utf-8") as f:
         json.dump(session_outputs, f, ensure_ascii=False, indent=2)
 

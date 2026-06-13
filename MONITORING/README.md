@@ -11,11 +11,6 @@
 | Alerts     | http://localhost:9090/alerts |
 
 ## Запуск сервиса
-Обучение модели:
-```bash
-pip install -r API/requirements.txt mlflow matplotlib
-python MONITORING/scripts/train_lr_model.py --sample 0 --mlflow
-```
 Мониторинг:
 ```bash
 cd MONITORING

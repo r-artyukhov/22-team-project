@@ -7,7 +7,7 @@ import pandas as pd
 FEATURE_COLUMNS = [f"E{i}" for i in range(1, 30)]
 _THRESHOLD = 0.5
 
-_artifacts = joblib.load("models/logistic_regression.joblib")
+_artifacts = joblib.load("models/deeplog.joblib")
 _model = _artifacts["model"]
 _scaler = _artifacts["scaler"]
 
@@ -39,7 +39,10 @@ def _event_id(log: dict) -> str:
 
 def predict_from_logs(logs: list[dict]) -> dict:
     counts = Counter(_event_id(l) for l in logs)
-    X = pd.DataFrame([[counts.get(f"E{i}", 0) for i in range(1, 30)]], columns=FEATURE_COLUMNS)
+    X = pd.DataFrame(
+        [[counts.get(f"E{i}", 0) for i in range(1, 30)]],
+        columns=FEATURE_COLUMNS,
+    )
     proba = float(_model.predict_proba(_scaler.transform(X))[0, 1])
     return {
         "score": proba,

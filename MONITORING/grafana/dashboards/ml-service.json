@@ -262,8 +262,8 @@
   },
   "timepicker": {},
   "timezone": "",
-  "title": "HDFS - LogReg",
-  "uid": "hdfs-lr-demo",
+  "title": "HDFS - Deeplog",
+  "uid": "hdfs-deeplog",
   "version": 8,
   "weekStart": ""
 }

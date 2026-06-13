@@ -39,7 +39,7 @@ async def lifespan(_: FastAPI):
     yield
 
 
-app = FastAPI(title="ML Service API", version="2.0.0", lifespan=lifespan)
+app = FastAPI(title="Anomaly Detection API", version="2.0.0", lifespan=lifespan)
 
 
 @app.post(
