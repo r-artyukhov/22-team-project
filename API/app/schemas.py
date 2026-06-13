@@ -1,16 +1,12 @@
 from datetime import datetime
-from typing import Optional
-from pydantic import BaseModel, Field, field_validator
+from typing import Any, Optional
 
-
-class LogEntry(BaseModel):
-    message: str
-    component: Optional[str] = ""
-    level: Optional[str] = ""
+from pydantic import BaseModel, Field
 
 
 class LogSequenceRequest(BaseModel):
-    logs: list[LogEntry] = Field(..., min_length=1, description="Список лог-записей")
+    block_id: str | None = None
+    logs: list[dict[str, Any]] = Field(..., min_length=1)
 
 
 class AnomalyResponse(BaseModel):
@@ -50,15 +46,8 @@ class StatsResponse(BaseModel):
 
 class UserCreate(BaseModel):
     username: str
-    password: str = Field(..., min_length=1, max_length=72)
+    password: str
     is_admin: bool = False
-
-    @field_validator('password')
-    @classmethod
-    def validate_password_bytes(cls, v: str) -> str:
-        if len(v.encode('utf-8')) > 72:
-            raise ValueError('Password cannot be longer than 72 bytes')
-        return v
 
 
 class UserResponse(BaseModel):

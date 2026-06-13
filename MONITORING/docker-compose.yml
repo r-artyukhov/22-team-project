@@ -1,0 +1,59 @@
+services:
+  ml-service:
+    build: ../API
+    ports:
+      - 8080:8000
+    volumes:
+      - db_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/ml_service.db
+      - SECRET_KEY=${SECRET_KEY:-demo-secret-key}
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-demo-admin-token}
+      - JWT_ALGORITHM=HS256
+      - JWT_EXPIRATION_MINUTES=30
+    restart: "no"
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v3.13.0
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:////data/mlflow.db
+      --default-artifact-root /data/artifacts
+    ports:
+      - 5050:5000
+    volumes:
+      - ../MLflow:/data
+    restart: "no"
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+    depends_on:
+      - ml-service
+    restart: "no"
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    ports:
+      - 3030:3000
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_DEFAULT_THEME=light
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    restart: "no"
+
+volumes:
+  db_data:
+  grafana_data:

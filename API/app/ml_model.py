@@ -1,113 +1,49 @@
 import re
-from pathlib import Path
-from typing import Optional
+from collections import Counter
 
 import joblib
+import pandas as pd
+
+FEATURE_COLUMNS = [f"E{i}" for i in range(1, 30)]
+_THRESHOLD = 0.5
+
+_artifacts = joblib.load("models/logistic_regression.joblib")
+_model = _artifacts["model"]
+_scaler = _artifacts["scaler"]
+
+_EVENT_RULES = [
+    (r"Exception in receiveBlock|IOException", "E3"),
+    (r"writeBlock.*[Ee]xception|SocketTimeoutException", "E20"),
+    (r"Connection refused|Failed to transfer", "E11"),
+    (r"PacketResponder", "E11"),
+    (r"Receiving block", "E5"),
+    (r"Received block", "E6"),
+    (r"Served block", "E9"),
+    (r"Verification succeeded", "E4"),
+    (r"addStoredBlock|Redundant addStoredBlock", "E26"),
+    (r"BLOCK\* NameSystem", "E22"),
+    (r"ERROR", "E3"),
+    (r"WARN", "E21"),
+]
 
 
-class LogAnomalyDetector:
-    """Isolation Forest модель для детекции аномалий в HDFS логах."""
-
-    # Регулярные выражения для нормализации
-    IP_RE = re.compile(r"\b\d{1,3}(?:\.\d{1,3}){3}\b")
-    HEX_RE = re.compile(r"\b[0-9a-fA-F]{6,}\b")
-    PATH_RE = re.compile(r"(?:/[^ \t\n\r\f\v]+)+")
-    NUM_RE = re.compile(r"\b\d+\b")
-    BLK_RE = re.compile(r"\bblk_[\-\d]+\b")
-
-    def __init__(self, model_path: str = "models/isolation_forest.joblib"):
-        self.model_path = Path(model_path)
-        self._load_model()
-
-    def _load_model(self):
-        """Загрузка модели из joblib файла."""
-        if not self.model_path.exists():
-            raise FileNotFoundError(f"Model file not found: {self.model_path}")
-
-        artifacts = joblib.load(self.model_path)
-        self.model = artifacts["model"]
-        self.vectorizer = artifacts["vectorizer"]
-        self.threshold = artifacts["threshold"]
-
-    def normalize_message(self, s: str) -> str:
-        """Нормализация лог-сообщения."""
-        s = s.lower()
-        s = self.BLK_RE.sub(" <blk> ", s)
-        s = self.IP_RE.sub(" <ip> ", s)
-        s = self.PATH_RE.sub(" <path> ", s)
-        s = self.HEX_RE.sub(" <hex> ", s)
-        s = self.NUM_RE.sub(" <num> ", s)
-        s = re.sub(r"\s+", " ", s).strip()
-        return s
-
-    def tokenize_log_entry(self, message: str, component: str = "", level: str = "") -> str:
-        """Преобразование лог-записи в токен."""
-        msg = self.normalize_message(message)
-        comp = component.split("$")[0].lower() if component else ""
-        lvl = level.lower() if level else ""
-        return f"{comp}_{lvl}__ {msg}"
-
-    def predict(self, tokenized_block: str) -> dict:
-        """
-        Предсказание для токенизированной последовательности логов.
-
-        Args:
-            tokenized_block: Строка с токенами событий, разделёнными " . "
-
-        Returns:
-            dict с полями: score, is_anomaly, threshold
-        """
-        X = self.vectorizer.transform([tokenized_block])
-        score = float(self.model.score_samples(X)[0])
-        is_anomaly = score <= self.threshold
-
-        return {
-            "score": score,
-            "is_anomaly": bool(is_anomaly),
-            "threshold": self.threshold
-        }
-
-    def predict_from_logs(self, logs: list[dict]) -> dict:
-        """
-        Предсказание для списка лог-записей.
-
-        Args:
-            logs: Список словарей с ключами: message, component (опц.), level (опц.)
-
-        Returns:
-            dict с полями: score, is_anomaly, threshold, num_events
-        """
-        if not logs:
-            return {
-                "score": None,
-                "is_anomaly": None,
-                "threshold": self.threshold,
-                "num_events": 0,
-                "error": "Empty log sequence"
-            }
-
-        tokens = []
-        for log in logs:
-            message = log.get("message", "")
-            component = log.get("component", "")
-            level = log.get("level", "")
-            token = self.tokenize_log_entry(message, component, level)
-            tokens.append(token)
-
-        tokenized_block = " . ".join(tokens)
-        result = self.predict(tokenized_block)
-        result["num_events"] = len(logs)
-
-        return result
+def _event_id(log: dict) -> str:
+    if log.get("event_id"):
+        return log["event_id"]
+    text = f"{log.get('level', '')} {log.get('message', '')}"
+    for pattern, eid in _EVENT_RULES:
+        if re.search(pattern, text, re.IGNORECASE):
+            return eid
+    return "E5"
 
 
-# Глобальный экземпляр модели
-ml_model: Optional[LogAnomalyDetector] = None
-
-
-def get_ml_model() -> LogAnomalyDetector:
-    """Получение экземпляра модели (ленивая загрузка)."""
-    global ml_model
-    if ml_model is None:
-        ml_model = LogAnomalyDetector()
-    return ml_model
+def predict_from_logs(logs: list[dict]) -> dict:
+    counts = Counter(_event_id(l) for l in logs)
+    X = pd.DataFrame([[counts.get(f"E{i}", 0) for i in range(1, 30)]], columns=FEATURE_COLUMNS)
+    proba = float(_model.predict_proba(_scaler.transform(X))[0, 1])
+    return {
+        "score": proba,
+        "is_anomaly": proba >= _THRESHOLD,
+        "threshold": _THRESHOLD,
+        "num_events": len(logs),
+    }

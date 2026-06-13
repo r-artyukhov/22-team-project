@@ -1,0 +1,95 @@
+{
+  "block_id": "blk_-1608999687919862906",
+  "logs": [
+    {
+      "Date": "81109",
+      "Time": "203518",
+      "Pid": "143",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Receiving block blk_-1608999687919862906 src: /10.250.19.102:54106 dest: /10.250.19.102:50010",
+      "EventId": "E5"
+    },
+    {
+      "Date": "81109",
+      "Time": "203518",
+      "Pid": "143",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Receiving block blk_-1608999687919862906 src: /10.250.19.102:54106 dest: /10.250.19.102:50010",
+      "EventId": "E5"
+    },
+    {
+      "Date": "81109",
+      "Time": "203518",
+      "Pid": "143",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Receiving block blk_-1608999687919862906 src: /10.250.19.102:54106 dest: /10.250.19.102:50010",
+      "EventId": "E5"
+    },
+    {
+      "Date": "81109",
+      "Time": "203522",
+      "Pid": "143",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Served block blk_-1608999687919862906 to /10.250.10.6",
+      "EventId": "E9"
+    },
+    {
+      "Date": "81109",
+      "Time": "203519",
+      "Pid": "145",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$PacketResponder",
+      "Content": "PacketResponder 1 for block blk_-1608999687919862906 terminating",
+      "EventId": "E11"
+    },
+    {
+      "Date": "81109",
+      "Time": "203522",
+      "Pid": "143",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Served block blk_-1608999687919862906 to /10.250.10.6",
+      "EventId": "E9"
+    },
+    {
+      "Date": "81109",
+      "Time": "203519",
+      "Pid": "145",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$PacketResponder",
+      "Content": "PacketResponder 1 for block blk_-1608999687919862906 terminating",
+      "EventId": "E11"
+    },
+    {
+      "Date": "81109",
+      "Time": "203520",
+      "Pid": "35",
+      "Level": "INFO",
+      "Component": "dfs.FSNamesystem",
+      "Content": "BLOCK* NameSystem.addStoredBlock: blockMap updated: 10.250.7.240:50010 is added to blk_-1608999687919862906 size 67108864",
+      "EventId": "E26"
+    },
+    {
+      "Date": "81109",
+      "Time": "203520",
+      "Pid": "35",
+      "Level": "INFO",
+      "Component": "dfs.FSNamesystem",
+      "Content": "BLOCK* NameSystem.addStoredBlock: blockMap updated: 10.250.7.240:50010 is added to blk_-1608999687919862906 size 67108864",
+      "EventId": "E26"
+    },
+    {
+      "Date": "81109",
+      "Time": "203520",
+      "Pid": "35",
+      "Level": "INFO",
+      "Component": "dfs.FSNamesystem",
+      "Content": "BLOCK* NameSystem.addStoredBlock: blockMap updated: 10.250.7.240:50010 is added to blk_-1608999687919862906 size 67108864",
+      "EventId": "E26"
+    }
+  ]
+}

@@ -21,10 +21,9 @@ htmlcov/
 .venv
 DL/artifacts/
 .DS_Store
-MLflow/mlruns/
-MLflow/artifacts/
-MLflow/deeplog_artifacts/
+mlruns/
+artifacts/
+deeplog_artifacts/
 *.log
 *.npz
-
 HDFS_v1/

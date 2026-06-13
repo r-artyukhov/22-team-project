@@ -1,0 +1,59 @@
+{
+  "block_id": "blk_-1608999687919862906",
+  "logs": [
+    {
+      "Date": "81109",
+      "Time": "204001",
+      "Pid": "143",
+      "Level": "ERROR",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Exception in receiveBlock for block blk_-1608999687919862906 java.io.IOException: Connection reset by peer",
+      "EventId": "E3"
+    },
+    {
+      "Date": "81109",
+      "Time": "204002",
+      "Pid": "143",
+      "Level": "INFO",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Receiving block blk_-1608999687919862906 src: /10.250.19.102:54106 dest: /10.250.19.102:50010",
+      "EventId": "E5"
+    },
+    {
+      "Date": "81109",
+      "Time": "204003",
+      "Pid": "143",
+      "Level": "ERROR",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "writeBlock blk_-1608999687919862906 received exception java.net.SocketTimeoutException: 60000 millis timeout while waiting for channel to be ready for write",
+      "EventId": "E20"
+    },
+    {
+      "Date": "81109",
+      "Time": "204004",
+      "Pid": "240",
+      "Level": "WARN",
+      "Component": "dfs.DataNode",
+      "Content": "DatanodeRegistration(10.250.7.240:50010):Failed to transfer blk_-1608999687919862906 to 10.250.19.102:50010 got java.net.SocketException: Connection refused",
+      "EventId": "E11"
+    },
+    {
+      "Date": "81109",
+      "Time": "204005",
+      "Pid": "143",
+      "Level": "ERROR",
+      "Component": "dfs.DataNode$DataXceiver",
+      "Content": "Exception in receiveBlock for block blk_5724034459456899955 java.io.IOException: Broken pipe",
+      "EventId": "E3"
+    },
+    {
+      "Date": "81109",
+      "Time": "204006",
+      "Pid": "35",
+      "Level": "WARN",
+      "Component": "dfs.FSNamesystem",
+      "Content": "BLOCK* NameSystem.addStoredBlock: Redundant addStoredBlock request received for blk_5724034459456899955 on 10.250.7.240:50010 size 67108864",
+      "EventId": "E26"
+    }
+  ]
+}
